@@ -1,0 +1,25 @@
+body {
+  background-image: url('./assets/webb-dark.png');
+  background-color: #000000;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input,
+select {
+  font-family: inherit;
+}
+
+* {
+  box-sizing: border-box;
+}
