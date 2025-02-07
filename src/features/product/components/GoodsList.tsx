@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import GoodsCard from "../GoodsCard/GoodsCard";
-import { Pagination, Stack, Box } from "@mui/material";
-import { Product } from "../../types/Product";
+import { useSelector } from "react-redux";
+import { Pagination, Stack, Box, Button } from "@mui/material";
+import { RootState } from "../../../store/store";
+import GoodsCard from "./GoodsCard";
+import AddProductModal from "./AddProductModal";
 
-interface GoodsListProps {
-  products: Product[];
-}
+const GoodsList: React.FC = () => {
+  const products = useSelector((state: RootState) => state.products);
 
-const GoodsList: React.FC<GoodsListProps> = ({ products }) => {
   const [page, setPage] = useState(1);
   const itemsPerPage = 8;
+
+  const [openAddModal, setOpenAddModal] = useState(false);
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
@@ -28,15 +30,32 @@ const GoodsList: React.FC<GoodsListProps> = ({ products }) => {
         minHeight: "100vh",
       }}
     >
+      {/* Кнопка "Добавить товар" */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-start",
+          padding: "30px",
+          marginLeft: { xs: "0", md: "220px" },
+        }}
+      >
+        <Button
+          variant="contained"
+          color="success"
+          onClick={() => setOpenAddModal(true)}
+        >
+          Добавить товар
+        </Button>
+      </Box>
+
       {/* Сетка карточек */}
       <Box
         sx={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
           gap: "18px",
-          padding: "30px",
+          padding: "0 30px 30px 30px",
           marginLeft: { xs: "0", md: "220px" },
-          marginBottom: "30px",
           boxSizing: "border-box",
         }}
       >
@@ -66,6 +85,14 @@ const GoodsList: React.FC<GoodsListProps> = ({ products }) => {
           }}
         />
       </Stack>
+
+      {/* Модалка для добавления нового товара */}
+      {openAddModal && (
+        <AddProductModal
+          open={openAddModal}
+          onClose={() => setOpenAddModal(false)}
+        />
+      )}
     </Box>
   );
 };

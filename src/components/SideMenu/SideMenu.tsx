@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   TextField,
   Checkbox,
@@ -10,15 +10,11 @@ import {
   IconButton,
   Typography,
   Box,
-} from '@mui/material';
-import { Clear as ClearIcon } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
-
-interface SideMenuProps {
-  isCollapsed: boolean;
-  categories: string[];
-  onApplyFilters: (filters: Filters) => void;
-}
+} from "@mui/material";
+import { Clear as ClearIcon } from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 export interface Filters {
   name: string;
@@ -26,57 +22,75 @@ export interface Filters {
   category: string;
 }
 
+interface SideMenuProps {
+  isCollapsed: boolean;
+  onApplyFilters: (filters: Filters) => void;
+}
+
 // Кастомные кнопки
 const StyledButton = styled(Button)(({ theme }) => ({
-  height: '40px',
-  borderRadius: '6px',
-  fontWeight: 'bold',
-  textTransform: 'uppercase',
-  '&.apply': {
+  height: "40px",
+  borderRadius: "6px",
+  fontWeight: "bold",
+  textTransform: "uppercase",
+  "&.apply": {
     backgroundColor: theme.palette.primary.main,
-    color: '#ffffff',
-    '&:hover': { backgroundColor: theme.palette.primary.dark },
+    color: "#ffffff",
+    "&:hover": { backgroundColor: theme.palette.primary.dark },
   },
-  '&.reset': {
+  "&.reset": {
     borderColor: theme.palette.secondary.main,
     color: theme.palette.secondary.main,
-    '&:hover': { backgroundColor: theme.palette.secondary.light, color: theme.palette.secondary.dark },
+    "&:hover": {
+      backgroundColor: theme.palette.secondary.light,
+      color: theme.palette.secondary.dark,
+    },
   },
 }));
 
-const SideMenu: React.FC<SideMenuProps> = ({ isCollapsed, categories, onApplyFilters }) => {
-  const [name, setName] = useState('');
-  const [inStockOnly, setInStockOnly] = useState(false);
-  const [category, setCategory] = useState('');
+const SideMenu: React.FC<SideMenuProps> = ({
+  isCollapsed,
+  onApplyFilters,
+}) => {
+  // Список категорий берём из Redux (например, categoriesSlice)
+  const categories = useSelector((state: RootState) => state.categories);
 
-  const handleApplyFilters = () => onApplyFilters({ name, inStockOnly, category });
+  // Локальные стейты для полей фильтра
+  const [name, setName] = useState("");
+  const [inStockOnly, setInStockOnly] = useState(false);
+  const [category, setCategory] = useState("");
+
+  const handleApplyFilters = () => {
+    // Передаём наружу выбранные значения
+    onApplyFilters({ name, inStockOnly, category });
+  };
 
   const handleResetFilters = () => {
-    setName('');
+    setName("");
     setInStockOnly(false);
-    setCategory('');
+    setCategory("");
   };
 
   return (
     <Box
       component="aside"
       sx={{
-        position: 'fixed',
+        position: "fixed",
         left: 0,
-        width: isCollapsed ? '60px' : '220px',
-        background: 'linear-gradient(135deg, #1b1035, #130a2b)',
-        height: 'calc(100% - 60px)',
-        padding: isCollapsed ? '20px 10px' : '20px',
-        boxSizing: 'border-box',
-        boxShadow: '2px 0 10px rgba(0, 0, 0, 0.15)',
-        overflow: 'hidden',
-        transition: 'width 1s ease',
+        width: isCollapsed ? "60px" : "220px",
+        background: "linear-gradient(135deg, #1b1035, #130a2b)",
+        height: "calc(100% - 60px)",
+        padding: isCollapsed ? "20px 10px" : "20px",
+        boxSizing: "border-box",
+        boxShadow: "2px 0 10px rgba(0, 0, 0, 0.15)",
+        overflow: "hidden",
+        transition: "width 1s ease",
       }}
     >
       {!isCollapsed && (
         <Stack spacing={2}>
           {/* Название товара */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <TextField
               label="Название товара"
               variant="outlined"
@@ -86,40 +100,41 @@ const SideMenu: React.FC<SideMenuProps> = ({ isCollapsed, categories, onApplyFil
               fullWidth
               slotProps={{
                 input: {
-                  style: { color: '#9c27b0' },
+                  style: { color: "#9c27b0" },
                 },
                 inputLabel: {
-                  style: { color: '#9c27b0' },
-                }
+                  style: { color: "#9c27b0" },
+                },
               }}
               sx={{
-                minWidth: '170px',
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderWidth: '2px',
-                    borderColor: '#9c27b0',
+                minWidth: "170px",
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderWidth: "2px",
+                    borderColor: "#9c27b0",
                   },
-                }
+                },
               }}
             />
-            <IconButton onClick={() => setName('')}>
-              <ClearIcon sx={{
-                color: '#9c27b0',
-                marginLeft: '-13px',
-              }}
+            <IconButton onClick={() => setName("")}>
+              <ClearIcon
+                sx={{
+                  color: "#9c27b0",
+                  marginLeft: "-13px",
+                }}
               />
             </IconButton>
           </Box>
 
-          {/* Чекбокс */}
+          {/* Чекбокс: Только в наличии */}
           <FormControlLabel
             control={
               <Checkbox
                 checked={inStockOnly}
                 onChange={(e) => setInStockOnly(e.target.checked)}
                 sx={{
-                  color: '#ffffff',
-                  '&.Mui-checked': { color: '#3f51b5' },
+                  color: "#ffffff",
+                  "&.Mui-checked": { color: "#3f51b5" },
                 }}
               />
             }
@@ -127,7 +142,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isCollapsed, categories, onApplyFil
           />
 
           {/* Категория */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -135,31 +150,35 @@ const SideMenu: React.FC<SideMenuProps> = ({ isCollapsed, categories, onApplyFil
               fullWidth
               size="small"
               sx={{
-                minWidth: '170px',
-                backgroundColor: '#ffffff',
-                borderRadius: '6px',
-                color: '#333',
-                '& fieldset': { borderColor: '#9c27b0' },
-                '&:hover fieldset': { borderColor: '#9c27b0' },
+                minWidth: "170px",
+                backgroundColor: "#ffffff",
+                borderRadius: "6px",
+                color: "#333",
+                "& fieldset": { borderColor: "#9c27b0" },
+                "&:hover fieldset": { borderColor: "#9c27b0" },
               }}
             >
               <MenuItem value="">Все категории</MenuItem>
               {categories.map((cat) => (
-                <MenuItem key={cat} value={cat}>
-                  {cat}
+                <MenuItem key={cat.id} value={cat.name}>
+                  {cat.name}
                 </MenuItem>
               ))}
             </Select>
-            <IconButton onClick={() => setCategory('')}>
-              <ClearIcon sx={{ color: '#9c27b0', marginLeft: '-13px' }} />
+            <IconButton onClick={() => setCategory("")}>
+              <ClearIcon sx={{ color: "#9c27b0", marginLeft: "-13px" }} />
             </IconButton>
           </Box>
 
-          {/* Кнопки */}
+          {/* Кнопки "Применить" и "Сбросить" */}
           <StyledButton className="apply" onClick={handleApplyFilters}>
             Применить
           </StyledButton>
-          <StyledButton className="reset" variant="outlined" onClick={handleResetFilters}>
+          <StyledButton
+            className="reset"
+            variant="outlined"
+            onClick={handleResetFilters}
+          >
             Сбросить
           </StyledButton>
         </Stack>
